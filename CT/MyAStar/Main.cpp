@@ -235,9 +235,14 @@ public :
 		return nullptr;
 	}
 
-	void OpenListPrint()
+	void ListPrint()
 	{
 		for (AStarNode* Node : OpenList)
+		{
+			TileInterface->SetTile(Node->Point, ETileType::OpenList);
+		}
+
+		for (AStarNode* Node : CloseList)
 		{
 			TileInterface->SetTile(Node->Point, ETileType::OpenList);
 		}
@@ -268,7 +273,7 @@ public :
 					return _Left->F < _Right->F;
 				});
 
-			OpenListPrint();
+			ListPrint();
 			
 			_getch();
 
