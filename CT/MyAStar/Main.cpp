@@ -18,6 +18,7 @@ enum ETileType
 	Start,
 	End,
 	OpenList,
+	CloseList,
 };
 
 enum ETileDir
@@ -52,7 +53,7 @@ public :
 		return *this;
 	}
 
-	bool operator==(const IntPoint _Other)
+	bool operator==(const IntPoint _Other) const
 	{
 		return _Other.X == X && _Other.Y == Y;
 	}
@@ -229,8 +230,17 @@ public :
 				continue;
 			}
 
-			PopNode(CheckPoint, _End, _CurCheckNode);
+			AStarNode* Node = PopNode(CheckPoint, _End, _CurCheckNode);
+
+			if (_End == Node->Point)
+			{
+				return Node;
+			}
+
+			OpenList.push_back(Node);
 		}
+
+		ListPrint();
 
 		return nullptr;
 	}
@@ -244,7 +254,7 @@ public :
 
 		for (AStarNode* Node : CloseList)
 		{
-			TileInterface->SetTile(Node->Point, ETileType::OpenList);
+			TileInterface->SetTile(Node->Point, ETileType::CloseList);
 		}
 
 		TileInterface->Print();
@@ -261,6 +271,8 @@ public :
 		// ±Ê√£±‚
 		AStarNode* NewNode = PopNode(_Start, _End, nullptr);
 		OpenList.push_back(NewNode);
+
+		AStarNode* EndNode = nullptr;
 
 		while (false == OpenList.empty())
 		{
@@ -283,7 +295,7 @@ public :
 			OpenList.pop_front();
 			CloseList.push_back(Node);
 
-			AStarNode* EndNode = CheckNode(Node, _End);
+			EndNode = CheckNode(Node, _End);
 
 			if (nullptr != EndNode)
 			{
@@ -291,7 +303,11 @@ public :
 			}
 		}
 
-		return std::vector<IntPoint>();
+		EndNode;
+
+		std::vector<IntPoint> Result;
+
+		return Result;
 	}
 
 private :
@@ -364,6 +380,9 @@ public :
 					break;
 				case ETileType::OpenList:
 					std::cout << "O";
+					break;
+				case ETileType::CloseList:
+					std::cout << "C";
 					break;
 				default :
 					break;
